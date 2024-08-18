@@ -5,7 +5,7 @@ from tqdm import tqdm
 import os
 import pandas as pd
 import re
-exam_path = './exams'
+exam_path = './katunyou_exams'
 answer_pattern = r"\([1-5]\)"
 
 # current date time
@@ -66,6 +66,7 @@ def check_answer(answer:str, sol:str):
 
 def main(init, inference, model_name, model_path_or_api_key=None):
     # Init model
+    print("Init model...")
     init(model_name, model_path_or_api_key)
     
     model_name_safe_filepath = model_name.replace("/", "_")
@@ -82,7 +83,7 @@ def main(init, inference, model_name, model_path_or_api_key=None):
         is_existed = False
 
     # Answer file name
-    with open(filename, 'a') as f:
+    with open(filename, 'a', encoding='utf-8') as f:
         if (not is_existed):
             f.write("Exam name" + "\t"+ "Year" + "\t" + "Question No" + "\t" +  "Question" + "\t" + "Choices" + "\t" + "Model Answer" + "\t" + "Solution" + "\t" + "Is Correct?" + '\n')
             f.flush()
@@ -185,7 +186,8 @@ if __name__ == "__main__":
         "typhoon-instruct":"typhoongpt",
         "gpt-3.5-turbo":"openai",
         "gpt-4":"openai",
-        "gemini-pro-1.5":"gemini"
+        "gemini-pro-1.5":"gemini",
+        "meta/llama-3.1-8b-instruct":"llama3.1",
     }
     
     if len(sys.argv) < 2 or len(sys.argv) > 3:
@@ -233,6 +235,8 @@ if __name__ == "__main__":
         from models.openai import init, inference
     elif (model_class == "gemini"):
         from models.gemini import init, inference
+    elif (model_class == "llama3.1"):
+        from models.llama31 import init, inference
     
     # Check exam path
     if (not os.path.exists(exam_path)):
